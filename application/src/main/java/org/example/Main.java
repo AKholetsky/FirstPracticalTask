@@ -1,5 +1,6 @@
 package org.example;
 
+import org.example.jmp.bank.api.Bank;
 import org.example.jmp.cloud.bank.impl.BankImpl;
 import org.example.jmp.cloud.service.impl.ServiceImpl;
 import org.example.jmp.dto.*;
@@ -9,6 +10,7 @@ import org.example.jmp.service.api.exception.SubscriptionNotFound;
 import java.time.LocalDate;
 import java.time.Month;
 import java.util.Map;
+import java.util.ServiceLoader;
 import java.util.function.BiFunction;
 
 public class Main {
@@ -48,5 +50,15 @@ public class Main {
 
         bankService.getAllSubscriptionsByCondition(subscription -> subscription.startDate().isBefore(LocalDate.of(2023, 11, 2))).forEach(System.out::println);
 
+        final BankCard creditBankCard1 = bank.createBankCard(user1, CreditBankCard::new);
+        final BankCard debitBankCard1 = bank.createBankCard(user1, DebitBankCard::new);
+
+        System.out.println(creditBankCard1);
+        System.out.println(debitBankCard1);
+
+        final Iterable<Bank> load = ServiceLoader.load(Bank.class);
+        final Bank nextBank = load.iterator().next();
+        System.out.println("Is BankImpl " + (nextBank instanceof BankImpl));
+        System.out.println(nextBank.createBankCard(user2, CreditBankCard::new).getNumber());
     }
 }
